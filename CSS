@@ -1,0 +1,165 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Courier New', Courier, monospace;
+}
+
+body {
+    background: #0d0e15;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+.game-viewport {
+    position: relative;
+    width: 800px;
+    height: 400px;
+    background: linear-gradient(180deg, #141622 0%, #0a0b10 100%);
+    border: 3px solid #00ffcc;
+    box-shadow: 0 0 20px rgba(0, 255, 204, 0.3);
+    overflow: hidden;
+}
+
+#floor {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 50px;
+    background: #1f2336;
+    border-top: 4px solid #ff007f;
+    box-shadow: 0 -5px 15px rgba(255, 0, 127, 0.4);
+}
+
+#player {
+    position: absolute;
+    bottom: 50px; /* Aligned exactly on top of floor border edge */
+    left: 100px;
+    width: 40px;
+    height: 50px;
+    background: #00ffcc;
+    border-radius: 4px;
+    box-shadow: 0 0 15px #00ffcc;
+    transition: height 0.1s, transform 0.1s; /* Handles swift shape compression transitions */
+}
+
+.thruster-flame {
+    position: absolute;
+    bottom: -10px;
+    left: 15px;
+    width: 10px;
+    height: 10px;
+    background: #ffaa00;
+    border-radius: 50%;
+    filter: blur(2px);
+    display: none;
+}
+
+#player.sliding {
+    height: 25px; /* Compresses hitbox vertical dimension layout safely in half */
+    background: #3900ff;
+    box-shadow: 0 0 15px #3900ff;
+}
+
+.obstacle {
+    position: absolute;
+    bottom: 50px;
+}
+
+.obstacle.spike {
+    width: 30px;
+    height: 40px;
+    background: #ff007f;
+    clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+    box-shadow: 0 0 10px #ff007f;
+}
+
+.obstacle.laser {
+    bottom: 105px; /* Floats exactly in upper airspace trajectory track layer alignment */
+    width: 45px;
+    height: 35px;
+    background: rgba(255, 213, 0, 0.9);
+    border-radius: 3px;
+    box-shadow: 0 0 15px #ffd500;
+    border-left: 4px solid #fff;
+    border-right: 4px solid #fff;
+}
+
+.hud {
+    position: absolute;
+    top: 15px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 25px;
+    color: #fff;
+    font-size: 18px;
+    font-weight: bold;
+    letter-spacing: 2px;
+    z-index: 5;
+}
+#scoreBox { color: #00ffcc; }
+#speedBox { color: #ffd500; }
+
+#tutorial {
+    position: absolute;
+    top: 40%;
+    width: 100%;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.4);
+    font-size: 14px;
+    line-height: 2;
+    pointer-events: none;
+}
+#tutorial span {
+    color: #fff;
+    border: 1px solid #fff;
+    padding: 2px 6px;
+    border-radius: 3px;
+}
+
+#gameOverScreen {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(10, 11, 16, 0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    z-index: 10;
+}
+.glitch-text {
+    color: #ff007f;
+    font-size: 42px;
+    letter-spacing: 5px;
+    text-shadow: 3px 3px 0px #00ffcc;
+    margin-bottom: 15px;
+}
+#gameOverScreen p {
+    color: #fff;
+    font-size: 18px;
+    margin-bottom: 25px;
+}
+#retryBtn {
+    background: transparent;
+    border: 2px solid #00ffcc;
+    color: #00ffcc;
+    padding: 12px 30px;
+    font-size: 16px;
+    cursor: pointer;
+    text-transform: uppercase;
+    transition: 0.2s ease;
+}
+#retryBtn:hover {
+    background: #00ffcc;
+    color: #0d0e15;
+    box-shadow: 0 0 15px #00ffcc;
+}
+
+.hide { display: none !important; }
