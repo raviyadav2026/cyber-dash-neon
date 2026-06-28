@@ -1,0 +1,176 @@
+const player = document.getElementById('player');
+const scoreElement = document.getElementById('score');
+const speedElement = document.getElementById('speed');
+const gameOverScreen = document.getElementById('gameOverScreen');
+const finalScore = document.getElementById('finalScore');
+const retryBtn = document.getElementById('retryBtn');
+const tutorial = document.getElementById('tutorial');
+const gameViewport = document.querySelector('.game-viewport');
+const thruster = document.querySelector('.thruster-flame');
+
+let score = 0;
+let gameSpeed = 6;         
+let gameActive = true;
+let obstacleTimer = 0;
+let activeObstacles = [];
+
+let playerY = 0;           
+let velocityY = 0;        
+const gravity = -0.6;      
+const jumpForce = 12;      
+let isGrounded = true;
+let isSliding = false;
+
+const inputState = { ArrowUp: false, ArrowDown: false };
+
+document.addEventListener('keydown', (e) => {
+    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        inputState[e.key] = true;
+        // Fade out tutorials upon player initiating control interactions
+        tutorial.style.opacity = '0';
+    }
+});
+
+document.addEventListener('keyup', (e) => {
+    if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
+        inputState[e.key] = false;
+    }
+});
+
+function engineUpdateLoop() {
+    if (!gameActive) return;
+
+    handlePlayerMovement();
+    handleObstaclesPipeline();
+    adjustDifficultyScale();
+
+    requestAnimationFrame(engineUpdateLoop);
+}
+
+function handlePlayerMovement() {
+    if (inputState.ArrowDown && isGrounded) {
+        if (!isSliding) {
+            isSliding = true;
+            player.classList.add('sliding');
+        }
+    } else {
+        if (isSliding) {
+            isSliding = false;
+            player.classList.remove('sliding');
+        }
+    }
+
+    if (inputState.ArrowUp && isGrounded && !isSliding) {
+        velocityY = jumpForce;
+        isGrounded = false;
+        thruster.style.display = 'block'; // Engage jetpack display visual indicators
+    }
+
+    if (!isGrounded) {
+        velocityY += gravity; // Pull character down via constant drag step adjustments
+        playerY += velocityY;
+
+        if (playerY <= 0) {
+            playerY = 0;
+            velocityY = 0;
+            isGrounded = true;
+            thruster.style.display = 'none'; // Snuff thruster display outputs on contact
+        }
+    }
+
+    player.style.bottom = `${50 + playerY}px`;
+}
+
+function handleObstaclesPipeline() {
+    obstacleTimer++;
+
+    let spawnRateModulation = Math.max(40, 100 - Math.floor(gameSpeed * 4));
+
+    if (obstacleTimer >= spawnRateModulation) {
+        obstacleTimer = 0;
+        spawnRandomObstacle();
+    }
+
+    for (let i = activeObstacles.length - 1; i >= 0; i--) {
+        let obs = activeObstacles[i];
+        let currentX = parseInt(obs.element.style.left);
+
+        currentX -= gameSpeed;
+        obs.element.style.left = `${currentX}px`;
+
+        if (detectBoxIntersection(player, obs.element)) {
+            triggerSystemFailure();
+            return;
+        }
+
+        if (currentX < -50) {
+            obs.element.remove();
+            activeObstacles.splice(i, 1);
+            
+            score += 25;
+            scoreElement.innerText = String(score).padStart(4, '0');
+        }
+    }
+}
+
+function spawnRandomObstacle() {
+    const obsType = Math.random() > 0.5 ? 'spike' : 'laser';
+    const obsElement = document.createElement('div');
+    obsElement.classList.add('obstacle', obsType);
+    obsElement.style.left = '800px'; 
+
+    gameViewport.appendChild(obsElement);
+    activeObstacles.push({ element: obsElement, type: obsType });
+}
+
+function adjustDifficultyScale() {
+    gameSpeed += 0.002;
+    speedElement.innerText = (gameSpeed / 6).toFixed(1) + 'x';
+}
+
+function detectBoxIntersection(elementA, elementB) {
+    let a = elementA.getBoundingClientRect();
+    let b = elementB.getBoundingClientRect();
+
+    const tolerance = 4;
+
+    return !(
+        a.top + tolerance > b.bottom - tolerance ||
+        a.bottom - tolerance < b.top + tolerance ||
+        a.right - tolerance < b.left + tolerance ||
+        a.left + tolerance > b.right - tolerance
+    );
+}
+
+function triggerSystemFailure() {
+    gameActive = false;
+    finalScore.innerText = score;
+    gameOverScreen.classList.remove('hide');
+}
+
+function resetSystemProtocol() {
+    activeObstacles.forEach(obs => obs.element.remove());
+    activeObstacles = [];
+
+    score = 0;
+    gameSpeed = 6;
+    playerY = 0;
+    velocityY = 0;
+    isGrounded = true;
+    isSliding = false;
+    obstacleTimer = 0;
+
+    scoreElement.innerText = '0000';
+    speedElement.innerText = '1.0x';
+    player.style.bottom = '50px';
+    player.classList.remove('sliding');
+    
+    gameOverScreen.classList.add('hide');
+    gameActive = true;
+
+    engineUpdateLoop();
+}
+
+retryBtn.addEventListener('click', resetSystemProtocol);
+
+engineUpdateLoop();
