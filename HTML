@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Dash: Neon Protocol</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="game-viewport">
+        <div class="hud">
+            <div id="scoreBox">SCORE: <span id="score">0000</span></div>
+            <div id="speedBox">SPEED: <span id="speed">1x</span></div>
+        </div>
+
+        <div id="tutorial">
+            <p>PRESS <span>▲ (UP)</span> TO JUMP OVER SPIKES</p>
+            <p>PRESS <span>▼ (DOWN)</span> TO SLIDE UNDER LASERS</p>
+        </div>
+        <div id="gameOverScreen" class="hide">
+            <h1 class="glitch-text">SYSTEM FAILURE</h1>
+            <p>DATA RECOVERED: <span id="finalScore">0</span> UNITS</p>
+            <button id="retryBtn">REBOOT PROTOCOL</button>
+        </div>
+
+        <div id="player">
+            <div class="thruster-flame"></div>
+        </div>
+        <div id="floor"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
